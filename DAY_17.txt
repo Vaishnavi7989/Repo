@@ -1,0 +1,399 @@
+DAY_17
+
+====================================D17_S1_A1_Build Spring Boot application to implement CRUD Operations==================================================
+ 
+package com.wecp.w2day4task2.entity;
+ 
+ 
+import javax.persistence.*;
+ 
+@Entity
+public class Employee {
+    // impelement employee entity here
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private double salary;
+ 
+   
+ 
+    public Employee(Long id, String firstName, String lastName, String email, String phoneNumber, double salary) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.salary = salary;
+    }
+    public Employee(){}
+ 
+    public Long getId() {
+        return id;
+    }
+ 
+    public void setId(Long id) {
+        this.id = id;
+    }
+ 
+    public String getFirstName() {
+        return firstName;
+    }
+ 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+ 
+    public String getLastName() {
+        return lastName;
+    }
+ 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+ 
+    public String getEmail() {
+        return email;
+    }
+ 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+ 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+ 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+ 
+    public double getSalary() {
+        return salary;
+    }
+ 
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+}
+ 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+package com.wecp.w2day4task2.exception;
+ 
+ 
+public class InvalidSalaryException extends RuntimeException{
+    public InvalidSalaryException(String string){
+        super(string);
+    }
+    // implement custom exception here
+}
+ 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+package com.wecp.w2day4task2.repository;
+ 
+import com.wecp.w2day4task2.entity.Employee;
+ 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+ 
+ 
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    // implement jpa repository for crud operation
+}
+ 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+package com.wecp.w2day4task2.service;
+ 
+ 
+import com.wecp.w2day4task2.entity.Employee;
+import com.wecp.w2day4task2.exception.InvalidSalaryException;
+import com.wecp.w2day4task2.repository.EmployeeRepository;
+ 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+ 
+@Service
+public class EmployeeService {
+ 
+  @Autowired
+  private EmployeeRepository employeeRepository;
+ 
+  public Employee createEmployee(Employee employee) {
+    if(employee.getSalary() < 0){
+      throw new InvalidSalaryException("Salary cannot be negative.");
+    }
+    return employeeRepository.save(employee);
+  }
+ 
+  public Employee getEmployeeById(Long id){
+    return employeeRepository.findById(id).orElse(null);
+  }
+ 
+  
+ 
+  public Employee updateEmployee(Long id ,Employee updatedEmployee) {
+    Employee existingEmployee = getEmployeeById(id);
+    if(updatedEmployee.getSalary() < 0){
+      throw new InvalidSalaryException("Salary cannot be negative.");
+    }
+ 
+    existingEmployee.setFirstName(updatedEmployee.getFirstName());
+    existingEmployee.setLastName(updatedEmployee.getLastName());
+    existingEmployee.setEmail(updatedEmployee.getEmail());
+    existingEmployee.setPhoneNumber(updatedEmployee.getPhoneNumber());
+    existingEmployee.setSalary(updatedEmployee.getSalary());
+ 
+    return employeeRepository.save(existingEmployee);
+  }
+ 
+  public void deleteEmployee(Long id){
+    employeeRepository.deleteById(id);
+  }
+ 
+}
+ 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+package com.wecp.w2day4task2;
+ 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+@SpringBootApplication
+public class W2day4Task2Application {
+ 
+	public static void main(String[] args) {
+		SpringApplication.run(W2day4Task2Application.class, args);
+	}
+ 
+}
+ 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+package com.wecp.w2day4task2.controller;
+
+import com.wecp.w2day4task2.entity.Employee;
+import com.wecp.w2day4task2.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+ 
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+ 
+   @Autowired
+   private EmployeeService employeeService;
+   @PostMapping
+   public Employee createEmployee(@RequestBody Employee employee){
+      return employeeService.createEmployee(employee);
+   }
+ 
+   @GetMapping("/{id}")
+   public Employee getEmployeeById(@PathVariable Long id){
+      return employeeService.getEmployeeById(id);
+   }
+ 
+   @PutMapping("/{id}")
+   public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee updatedEmployee){
+      return employeeService.updateEmployee(id, updatedEmployee);
+   }
+ 
+   @DeleteMapping("/{id}")
+   public void deleteEmployee(@PathVariable Long id){
+      employeeService.deleteEmployee(id);
+   }
+ 
+}
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+========================D17_S1_A2_Spring Boot Application to Implement CRUD Operations for a Product Inventory System with Hibernate========================
+
+package com.wecp.product_inventory_system.controller;
+ 
+ 
+import com.wecp.product_inventory_system.entity.Product;
+import com.wecp.product_inventory_system.repository.ProductRepository;
+import com.wecp.product_inventory_system.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+ 
+import java.util.List;
+ 
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+    @Autowired
+    private ProductService productService;
+    @PostMapping
+    public Product createProduct(@RequestBody Product product){
+        return productService.createProduct(product);
+    }
+    @GetMapping("/{id}")
+    public Product getProductById(@PathVariable Long id){
+        return productService.getProductById(id);
+    }
+    @PutMapping("/{id}")
+    public Product updateProduct(@PathVariable long id , @RequestBody Product updatedProduct){
+        return productService.updateProduct(id, updatedProduct);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
+ 
+    }
+ 
+ 
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+package com.wecp.product_inventory_system.entity;
+ 
+ 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+ 
+@Entity
+public class Product {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+        private String productName;
+        private String category;
+        private Double price;
+        private Integer stockQuantity;
+ 
+        public Product(){
+ 
+        }
+        public Product(Long id, String productName, String category, Double price, Integer stockQuantity) {
+            this.id = id;
+            this.productName = productName;
+            this.category = category;
+            this.price = price;
+            this.stockQuantity = stockQuantity;
+        }
+ 
+        public Long getId() {
+            return id;
+        }
+        public void setId(Long id) {
+            this.id = id;
+        }
+        public String getProductName() {
+            return productName;
+        }
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
+        public String getCategory() {
+            return category;
+        }
+        public void setCategory(String category) {
+            this.category = category;
+        }
+        public Double getPrice() {
+            return price;
+        }
+        public void setPrice(Double price) {
+            this.price = price;
+        }
+        public Integer getStockQuantity() {
+            return stockQuantity;
+        }
+        public void setStockQuantity(Integer stockQuantity) {
+            this.stockQuantity = stockQuantity;
+        }
+
+ 
+ 
+}
+ 
+ 
+ 
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+package com.wecp.product_inventory_system.repository;
+ 
+ 
+import com.wecp.product_inventory_system.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+ 
+@Repository
+public interface ProductRepository extends JpaRepository<Product,Long> {
+ 
+}
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+package com.wecp.product_inventory_system.service;
+ 
+import com.wecp.product_inventory_system.entity.Product;
+import com.wecp.product_inventory_system.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+ 
+import java.util.List;
+ 
+ 
+@Service
+public class ProductService {
+ 
+    @Autowired
+    private ProductRepository productRepository;
+public Product createProduct(Product product){
+        return productRepository.save(product);
+       }
+       public Product getProductById(Long id){
+            return productRepository.findById(id).orElse(null);
+       }
+       public Product updateProduct(long id , Product updatedProduct){
+        updatedProduct.setId(id);
+        return productRepository.save(updatedProduct);
+       }
+       public void deleteProduct(long id){
+        productRepository.deleteById(id);
+       }
+ 
+}
+ 
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+package com.wecp.product_inventory_system;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ProductInventorySystemApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProductInventorySystemApplication.class, args);
+	}
+
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+==========================================================
+
