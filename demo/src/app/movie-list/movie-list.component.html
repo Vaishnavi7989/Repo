@@ -1,0 +1,50 @@
+<!-- <div class="movie-list">
+    <h2>Movies</h2>
+    <button routerLink="/add" class="btn btn-primary">Add Movie</button>
+    <table class="table mt-3">
+    <thead>
+    <tr>
+    <th>Title</th>
+    <th>Director</th>
+    <th>Year</th>
+    <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let movie of movies">
+    <td>{{ movie.title }}</td>
+    <td>{{ movie.director }}</td>
+    <td>{{ movie.year }}</td>
+    <td>
+    <button class="btn btn-warning" (click)="editMovie(movie.id)">Edit</button>
+    <button class="btn btn-danger" (click)="deleteMovie(movie.id)">Delete</button>
+    </td>
+    </tr>
+    </tbody>
+    </table>
+   </div> -->
+<div>
+   <h2>Movies</h2>
+   <button routerLink="/add" class="btn btn-primary">Add Movie</button>
+   <table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Director</th>
+            <th>Year</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let movie of movies">
+        <td>{{ movie.title }}</td>
+        <td>{{ movie.director }}</td>
+        <td>{{ movie.year }}</td>
+   <td>
+    <button class="btn btn-warning" (click)="editMovie(movie.id)">Edit</button>
+    <button class="btn btn-danger" (click)="deleteMovie(movie.id)">Delete</button>
+   </td>
+   </tr>
+   </tbody>
+   </table>
+</div>

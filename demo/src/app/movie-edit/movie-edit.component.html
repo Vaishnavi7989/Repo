@@ -1,0 +1,51 @@
+
+<div class="movie-form">
+    <h2>Edit Movie</h2>
+    <form [formGroup]="movieForm" (ngSubmit)="updateMovie()">
+    <div class="form-group">
+    <label for="title">Title</label>
+    <input
+    id="title"
+    formControlName="title"
+    type="text"
+    class="form-control"
+    placeholder="Enter movie title"
+    />
+    <div *ngIf="movieForm.get('title')?.touched && movieForm.get('title')?.invalid" 
+   class="text-danger">
+    Title is required.
+    </div>
+    </div>
+    <div class="form-group">
+    <label for="director">Director</label>
+    <input
+    id="director"
+    formControlName="director"
+    type="text"
+    class="form-control"
+    placeholder="Enter director's name"
+    />
+    <div *ngIf="movieForm.get('director')?.touched && movieForm.get('director')?.invalid" 
+   class="text-danger">
+    Director is required.
+    </div>
+    </div>
+    <div class="form-group">
+    <label for="year">Year</label>
+    <input
+    id="year"
+    formControlName="year"
+    type="number"
+    class="form-control"
+    placeholder="Enter release year"
+    />
+    <div *ngIf="movieForm.get('year')?.touched && movieForm.get('year')?.invalid" 
+   class="text-danger">
+    Year is required.
+    </div>
+    </div>
+    <button type="submit" [disabled]="movieForm.invalid" class="btn btn-warning mt-3">
+    Update Movie
+    </button>
+    </form>
+   </div>
